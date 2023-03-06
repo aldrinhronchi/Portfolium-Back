@@ -7,4 +7,17 @@
     <RootNamespace>Portfolium_Back</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Connections\Repositories\" />
+    <Folder Include="Mapping\" />
+    <Folder Include="Models\Entities\" />
+    <Folder Include="Models\ViewModels\" />
+    <Folder Include="Services\Interfaces\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.3" />
+  </ItemGroup>
+
 </Project>
