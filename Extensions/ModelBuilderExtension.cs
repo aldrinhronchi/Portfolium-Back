@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Portfolium_Back.Models;
 
-namespace Terore.Extensions
+namespace Portfolium_Back.Extensions
 {
     public static class ModelBuilderExtension
     {
@@ -29,8 +29,7 @@ namespace Terore.Extensions
 
                         case nameof(Entity.GuidID):
                             property.IsKey();
-                            property.IsNullable = false;
-                            property.SetDefaultValue(Guid.NewGuid().ToString());
+                            property.SetDefaultValue(Guid.NewGuid());
                             break;
 
                         case nameof(Entity.DateUpdated):

@@ -7,7 +7,7 @@
         public DateTime? DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
         public Boolean IsActive { get; set; }
-        public String UserCreated { get; set; }
-        public String UserUpdated { get; set; }
+        public String? UserCreated { get; set; }
+        public String? UserUpdated { get; set; }
     }
 }
