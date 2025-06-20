@@ -1,4 +1,4 @@
-﻿using Portfolium_Back.Interfaces;
+﻿using Portfolium_Back.Connections.Repositories.Interface;
 using Portfolium_Back.Models;
 
 namespace Portfolium_Back.Connections.Repositories.Interface

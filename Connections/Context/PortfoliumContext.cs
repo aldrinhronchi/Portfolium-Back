@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Portfolium_Back.Connections.Configurations;
 using Portfolium_Back.Extensions;
 using Portfolium_Back.Models;
+using Portfolium_Back.Models.Entities;
 
 namespace Portfolium_Back.Context
 {
@@ -13,6 +13,8 @@ namespace Portfolium_Back.Context
         #region DBSets
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Erro> Erros { get; set; }
+        public DbSet<Ocorrencia> Ocorrencia { get; set; }
 
         #endregion DBSets
 

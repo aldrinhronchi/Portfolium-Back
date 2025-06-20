@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Portfolium_Back.Interfaces
+namespace Portfolium_Back.Connections.Repositories.Interface
 {
     public interface IRepository<TEntity> : IDisposable where TEntity : class
     {

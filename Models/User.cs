@@ -1,4 +1,6 @@
-﻿namespace Portfolium_Back.Models
+﻿using Portfolium_Back.Models.Entities;
+
+namespace Portfolium_Back.Models
 {
     public class User : Entity
     {

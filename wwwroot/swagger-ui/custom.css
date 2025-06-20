@@ -1,0 +1,135 @@
+/* Customização do Swagger UI para Portfolium */
+
+/* Cabeçalho */
+.swagger-ui .topbar {
+    background-color: #2c3e50;
+    border-bottom: 3px solid #3498db;
+}
+
+.swagger-ui .topbar .download-url-wrapper {
+    display: none;
+}
+
+/* Logo personalizado */
+.swagger-ui .topbar-wrapper .link:after {
+    content: "Portfolium API";
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.swagger-ui .topbar-wrapper .link img {
+    display: none;
+}
+
+/* Esquema de cores */
+.swagger-ui .scheme-container {
+    background: #ecf0f1;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Botões */
+.swagger-ui .btn.authorize {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.swagger-ui .btn.authorize:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.swagger-ui .btn.execute {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+.swagger-ui .btn.execute:hover {
+    background-color: #229954;
+    border-color: #229954;
+}
+
+/* Métodos HTTP */
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+    background: #27ae60;
+}
+
+.swagger-ui .opblock.opblock-post .opblock-summary-method {
+    background: #3498db;
+}
+
+.swagger-ui .opblock.opblock-put .opblock-summary-method {
+    background: #f39c12;
+}
+
+.swagger-ui .opblock.opblock-delete .opblock-summary-method {
+    background: #e74c3c;
+}
+
+/* Parâmetros */
+.swagger-ui .parameters-col_description input[type=text] {
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
+}
+
+.swagger-ui .parameters-col_description input[type=text]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+/* Respostas */
+.swagger-ui .response-col_status {
+    font-weight: bold;
+}
+
+.swagger-ui .response-col_status.response-200 {
+    color: #27ae60;
+}
+
+.swagger-ui .response-col_status.response-400,
+.swagger-ui .response-col_status.response-401,
+.swagger-ui .response-col_status.response-404 {
+    color: #e74c3c;
+}
+
+/* Tags */
+.swagger-ui .opblock-tag {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+/* Modelos */
+.swagger-ui .model-box {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+
+.swagger-ui .model-title {
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+/* Scrollbar personalizada */
+.swagger-ui ::-webkit-scrollbar {
+    width: 8px;
+}
+
+.swagger-ui ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.swagger-ui ::-webkit-scrollbar-thumb {
+    background: #3498db;
+    border-radius: 4px;
+}
+
+.swagger-ui ::-webkit-scrollbar-thumb:hover {
+    background: #2980b9;
+} 

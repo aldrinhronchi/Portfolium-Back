@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Portfolium_Back.Models;
+using Portfolium_Back.Models.Entities;
 
 namespace Portfolium_Back.Extensions
 {
@@ -27,11 +28,6 @@ namespace Portfolium_Back.Extensions
                             property.IsKey();
                             break;
 
-                        case nameof(Entity.GuidID):
-                            property.IsKey();
-                            property.SetDefaultValue(Guid.NewGuid());
-                            break;
-
                         case nameof(Entity.DateUpdated):
                             property.IsNullable = true;
                             break;
@@ -52,7 +48,7 @@ namespace Portfolium_Back.Extensions
                             break;
 
                         case nameof(Entity.UserUpdated):
-                            property.IsNullable = false;
+                            property.IsNullable = true;
                             break;
 
                         default:

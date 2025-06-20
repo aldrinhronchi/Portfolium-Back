@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Portfolium_Back.Context;
-using Portfolium_Back.Interfaces;
+using Portfolium_Back.Connections.Repositories.Interface;
 using Portfolium_Back.Models;
+using Portfolium_Back.Models.Entities;
 using System.Linq.Expressions;
 
-namespace Portfolium_Back.Repositories
+namespace Portfolium_Back.Connections.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {

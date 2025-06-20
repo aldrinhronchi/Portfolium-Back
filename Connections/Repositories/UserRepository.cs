@@ -1,7 +1,7 @@
 ﻿using Portfolium_Back.Connections.Repositories.Interface;
 using Portfolium_Back.Context;
 using Portfolium_Back.Models;
-using Portfolium_Back.Repositories;
+using Portfolium_Back.Connections.Repositories;
 
 namespace Portfolium_Back.Connections.Repositories
 {

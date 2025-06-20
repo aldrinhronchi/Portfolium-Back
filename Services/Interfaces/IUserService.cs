@@ -1,15 +1,19 @@
-﻿using Portfolium_Back.Models.ViewModels;
+﻿using Portfolium_Back.Models;
+using Portfolium_Back.Models.ViewModels;
 
 namespace Portfolium_Back.Services.Interfaces
 {
     public interface IUserService
     {
-        List<UserViewModel> Get();
+        Task<RequisicaoViewModel<User>> ListarAsync(Int32 Pagina, Int32 RegistrosPorPagina,
+            String CamposQuery = "", String ValoresQuery = "", String Ordenacao = "", Boolean Ordem = false);
 
-        bool Post(UserViewModel userViewModel);
+        Task<Boolean> SalvarAsync(UserViewModel userViewModel);
+
+        Task<Boolean> ExcluirAsync(String id);
 
         UserAuthenticateResponseViewModel Authenticate(UserAuthenticateRequestViewModel user);
+
         UserViewModel GetById(String id);
-        UserViewModel GetOne(String field, String value);
     }
 }
