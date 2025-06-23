@@ -2,7 +2,7 @@
 
 namespace Portfolium_Back.Models.ViewModels
 {
-    public class UserViewModel
+    public class UserViewModel : IViewModel<User, UserViewModel>
     {
         public Guid? GuidID { get; set; }
 
@@ -16,6 +16,7 @@ namespace Portfolium_Back.Models.ViewModels
         public string Password { get; set; }
 
         public string? Role { get; set; }
+        public string? Token { get; set; }
         public UserViewModel() { }
         public UserViewModel(User user)
         {
@@ -24,5 +25,22 @@ namespace Portfolium_Back.Models.ViewModels
             Email = user.Email;
             Password = user.Password;
         }
+
+        public UserViewModel ToViewModel(User entity)
+        {
+            return new UserViewModel(entity);
+        }
+        public User ToEntity()
+        {
+            return new User
+            {
+                GuidID = GuidID ?? Guid.NewGuid(),
+                Name = Name,
+                Email = Email,
+                Password = Password,
+                Role = Role
+            };
+        }
+
     }
 }

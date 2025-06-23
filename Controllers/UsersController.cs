@@ -12,7 +12,7 @@ namespace Portfolium_Back.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserService userService;
+        private readonly IUserService _userService;
 
         /// <summary>
         /// Construtor do UsersController
@@ -20,11 +20,11 @@ namespace Portfolium_Back.Controllers
         /// <param name="userService">Serviço de usuários injetado via DI</param>
         public UsersController(IUserService userService)
         {
-            this.userService = userService;
+            _userService = userService;
         }
 
         /// <summary>
-        /// Lista usuários com paginação, filtros e ordenação
+        /// Lista todos os usuários com paginação e filtros
         /// </summary>
         /// <param name="Pagina">Número da página (padrão: 1)</param>
         /// <param name="RegistrosPorPagina">Quantidade de registros por página (padrão: 10)</param>
@@ -38,15 +38,22 @@ namespace Portfolium_Back.Controllers
         /// <response code="401">Token de autenticação inválido</response>
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> ListarAsync(Int32 Pagina = 1, Int32 RegistrosPorPagina = 10,
-            String CamposQuery = "", String ValoresQuery = "", String Ordenacao = "", Boolean Ordem = false)
+        public async Task<ActionResult<RequestViewModel<UserViewModel>>> GetAll(
+            [FromQuery] Int32 Pagina = 1,
+            [FromQuery] Int32 RegistrosPorPagina = 10,
+            [FromQuery] String? CamposQuery = "",
+            [FromQuery] String? ValoresQuery = "",
+            [FromQuery] String? Ordenacao = "",
+            [FromQuery] Boolean Ordem = false)
         {
-            var resultado = await this.userService.ListarAsync(Pagina, RegistrosPorPagina, CamposQuery, ValoresQuery, Ordenacao, Ordem);
-            return Ok(resultado);
+
+            var result = await _userService.GetAllAsync(Pagina, RegistrosPorPagina, CamposQuery, ValoresQuery, Ordenacao, Ordem);
+            return Ok(result);
+
         }
 
         /// <summary>
-        /// Busca um usuário específico pelo ID
+        /// Busca um usuário por ID
         /// </summary>
         /// <param name="id">GUID do usuário a ser buscado</param>
         /// <returns>Dados do usuário encontrado</returns>
@@ -56,35 +63,59 @@ namespace Portfolium_Back.Controllers
         /// <response code="404">Usuário não encontrado</response>
         [HttpGet("{id}")]
         [Authorize]
-        public IActionResult GetById(String id)
+        public async Task<ActionResult<RequestViewModel<UserViewModel>>> GetById(String id)
         {
-            var user = this.userService.GetById(id);
-            return Ok(user);
+
+            var result = await _userService.GetByIdAsync(id);
+            return Ok(result);
+
         }
 
         /// <summary>
-        /// Cria um novo usuário ou atualiza um existente
+        /// Cria um novo usuário
         /// </summary>
-        /// <param name="userViewModel">Dados do usuário a ser criado/atualizado</param>
+        /// <param name="userViewModel">Dados do usuário a ser criado</param>
         /// <returns>Resultado da operação</returns>
-        /// <response code="200">Usuário criado/atualizado com sucesso</response>
+        /// <response code="200">Usuário criado com sucesso</response>
         /// <response code="400">Dados inválidos ou email já em uso</response>
         /// <response code="401">Token de autenticação inválido</response>
         [HttpPost]
-        //[Authorize]
-        public async Task<IActionResult> SalvarAsync(UserViewModel userViewModel)
+        [Authorize]
+        public async Task<ActionResult<RequestViewModel<UserViewModel>>> Create([FromBody] UserViewModel userViewModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
-            var resultado = await this.userService.SalvarAsync(userViewModel);
-            return Ok(resultado);
+
+            return Ok(await _userService.CreateAsync(userViewModel));
         }
 
         /// <summary>
-        /// Remove um usuário do sistema
+        /// Atualiza um usuário existente
+        /// </summary>
+        /// <param name="id">GUID do usuário a ser atualizado</param>
+        /// <param name="userViewModel">Dados do usuário a ser atualizado</param>
+        /// <returns>Resultado da operação</returns>
+        /// <response code="200">Usuário atualizado com sucesso</response>
+        /// <response code="400">Dados inválidos ou email já em uso</response>
+        /// <response code="401">Token de autenticação inválido</response>
+        /// <response code="404">Usuário não encontrado</response>
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<ActionResult<RequestViewModel<UserViewModel>>> Update(String id, [FromBody] UserViewModel userViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            return Ok(await _userService.UpdateAsync(userViewModel));
+        }
+
+        /// <summary>
+        /// Exclui um usuário (soft delete)
         /// </summary>
         /// <param name="id">GUID do usuário a ser removido</param>
         /// <returns>Resultado da operação</returns>
@@ -94,14 +125,15 @@ namespace Portfolium_Back.Controllers
         /// <response code="404">Usuário não encontrado</response>
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<IActionResult> ExcluirAsync(String id)
+        public async Task<ActionResult<RequestViewModel<UserViewModel>>> Delete(String id)
         {
-            var resultado = await this.userService.ExcluirAsync(id);
-            return Ok(resultado);
+
+            return Ok(await _userService.DeleteAsync(id));
+
         }
 
         /// <summary>
-        /// Autentica um usuário no sistema
+        /// Autentica um usuário
         /// </summary>
         /// <param name="userViewModel">Credenciais de login (email e senha)</param>
         /// <returns>Token JWT e dados do usuário autenticado</returns>
@@ -110,10 +142,12 @@ namespace Portfolium_Back.Controllers
         /// <response code="401">Email ou senha incorretos</response>
         [HttpPost("authenticate")]
         [AllowAnonymous]
-        public IActionResult Authenticate(UserAuthenticateRequestViewModel userViewModel)
+        public ActionResult<RequestViewModel<UserViewModel>> Authenticate([FromBody] UserAuthenticateRequestViewModel userViewModel)
         {
-            var resultado = this.userService.Authenticate(userViewModel);
-            return Ok(resultado);
+
+
+            return Ok(_userService.Authenticate(userViewModel));
+
         }
     }
 }

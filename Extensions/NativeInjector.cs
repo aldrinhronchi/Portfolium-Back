@@ -10,6 +10,8 @@ using Portfolium_Back.Extensions.Helpers;
 using Portfolium_Back.Extensions.Middleware;
 using Portfolium_Back.Services;
 using Portfolium_Back.Services.Interfaces;
+using Portfolium_Back.Connections.Repositories;
+using Portfolium_Back.Connections.Repositories.Interface;
 
 namespace Portfolium_Back.Extensions
 {
@@ -31,12 +33,19 @@ namespace Portfolium_Back.Extensions
             #region Services
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<ICurriculumService, CurriculumService>();
+            services.AddScoped<IContactService, ContactService>();
             services.AddTransient<ErrorHandlerService>();
 
             #endregion Services
 
             #region Repository
 
+            services.AddScoped<IProjectRepository, ProjectRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICurriculumRepository, CurriculumRepository>();
+            services.AddScoped<IContactRepository, ContactRepository>();
             // Repositório genérico é instanciado diretamente nos serviços
 
             #endregion Repository

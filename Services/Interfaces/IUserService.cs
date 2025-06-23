@@ -5,15 +5,17 @@ namespace Portfolium_Back.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<RequisicaoViewModel<User>> ListarAsync(Int32 Pagina, Int32 RegistrosPorPagina,
+        Task<RequestViewModel<UserViewModel>> GetAllAsync(Int32 Pagina, Int32 RegistrosPorPagina,
             String CamposQuery = "", String ValoresQuery = "", String Ordenacao = "", Boolean Ordem = false);
 
-        Task<Boolean> SalvarAsync(UserViewModel userViewModel);
+        Task<RequestViewModel<UserViewModel>> CreateAsync(UserViewModel userViewModel);
 
-        Task<Boolean> ExcluirAsync(String id);
+        Task<RequestViewModel<UserViewModel>> UpdateAsync(UserViewModel userViewModel);
 
-        UserAuthenticateResponseViewModel Authenticate(UserAuthenticateRequestViewModel user);
+        Task<RequestViewModel<UserViewModel>> DeleteAsync(String id);
 
-        UserViewModel GetById(String id);
+        Task<RequestViewModel<UserViewModel>> GetByIdAsync(String id);
+
+        RequestViewModel<UserViewModel> Authenticate(UserAuthenticateRequestViewModel user);
     }
 }

@@ -13,8 +13,17 @@ namespace Portfolium_Back.Context
         #region DBSets
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Project> Projects { get; set; }
         public DbSet<Erro> Erros { get; set; }
         public DbSet<Ocorrencia> Ocorrencia { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }  
+        public DbSet<PersonalInfo> PersonalInfos { get; set; }
+        public DbSet<Service> Services { get; set; }
+        public DbSet<Skill> Skills { get; set; }
+        public DbSet<Experience> Experiences { get; set; }
+        public DbSet<Education> Educations { get; set; }
+        public DbSet<Certification> Certifications { get; set; }
+      
 
         #endregion DBSets
 
