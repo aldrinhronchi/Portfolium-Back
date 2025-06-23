@@ -69,5 +69,16 @@ namespace Portfolium_Back.Extensions.Helpers
             }
             return GuidUsuario;
         }
+
+        /// <summary>
+        /// Retorna o UserID para sistema 
+        /// </summary>
+        /// <returns>ID do usuário único do sistema</returns>
+        public static Guid GetSingleUserId()
+        {
+            return AppConstants.SINGLE_USER_ID;
+        }
+
+     
     }
-} 
+}

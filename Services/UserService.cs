@@ -21,12 +21,12 @@ namespace Portfolium_Back.Services
             this.db = db;
         }
 
-        public async Task<RequisicaoViewModel<User>> ListarAsync(Int32 Pagina, Int32 RegistrosPorPagina,
+        public async Task<RequestViewModel<UserViewModel>> GetAllAsync(Int32 Pagina, Int32 RegistrosPorPagina,
             String CamposQuery = "", String ValoresQuery = "", String Ordenacao = "", Boolean Ordem = false)
         {
-            RequisicaoViewModel<User> Requisicao;
+            RequestViewModel<UserViewModel> Requisicao;
             IQueryable<User> _Users = db.Users.Where(x => x.IsActive);
-            
+
             if (!String.IsNullOrWhiteSpace(CamposQuery))
             {
                 String[] CamposArray = CamposQuery.Split(";|;");
@@ -55,7 +55,7 @@ namespace Portfolium_Back.Services
                     throw new ValidationException("Não foi possível filtrar!");
                 }
             }
-            
+
             if (!String.IsNullOrWhiteSpace(Ordenacao))
             {
                 _Users = TipografiaHelper.Ordenar(_Users, Ordenacao, Ordem);
@@ -64,109 +64,149 @@ namespace Portfolium_Back.Services
             {
                 _Users = TipografiaHelper.Ordenar(_Users, "ID", Ordem);
             }
-            
-            Requisicao = await TipografiaHelper.FormatarRequisicaoAsync(_Users, Pagina, RegistrosPorPagina);
-            
+
+            Requisicao = await TipografiaHelper.FormatarRequisicaoParaViewModelAsync<User, UserViewModel>(_Users, Pagina, RegistrosPorPagina, new UserViewModel());
+
             return Requisicao;
         }
 
-        public UserViewModel GetById(String id)
-        {
-            if (!Guid.TryParse(id, out Guid userId))
-            {
-                throw new ValidationException("UserID não é válido!");
-            }
-            User? _user = db.Users.AsNoTracking().FirstOrDefault(x => x.GuidID == userId && x.IsActive);
-            if (_user == null)
-            {
-                throw new KeyNotFoundException("Usuário não encontrado");
-            }
-            return new UserViewModel
-            {
-                GuidID = _user.GuidID,
-                Name = _user.Name,
-                Email = _user.Email,
-                Role = _user.Role
-            };
-        }
-
-        public async Task<Boolean> SalvarAsync(UserViewModel userViewModel)
-        {
-            Validator.ValidateObject(userViewModel, new ValidationContext(userViewModel), true);
-
-            IRepository<User> UserRepo = new Repository<User>(db);
-            User? _user = await db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.GuidID == userViewModel.GuidID);
-            
-            if (_user == null)
-            {
-                if (userViewModel.GuidID != null && userViewModel.GuidID != Guid.Empty)
-                {
-                    throw new ValidationException("ID deve ser vazio para novo usuário!");
-                }
-                
-                // Verificar se email já existe
-                User? existingUser = await db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email.ToUpper() == userViewModel.Email.ToUpper());
-                if (existingUser != null)
-                {
-                    throw new ValidationException("Email já cadastrado");
-                }
-
-                User newUser = new User
-                {
-                    GuidID = Guid.NewGuid(),
-                    Name = userViewModel.Name,
-                    Email = userViewModel.Email,
-                    Password = EncryptPassword(userViewModel.Password),
-                    Role = userViewModel.Role,
-                    DateCreated = TimeZoneManager.GetTimeNow(),
-                    IsActive = true,
-                    UserCreated = "Sistema" // ou pegar do contexto do usuário logado
-                };
-
-                await UserRepo.CreateAsync(newUser);
-            }
-            else
-            {
-                User userToUpdate = new User
-                {
-                    ID = _user.ID,
-                    GuidID = _user.GuidID,
-                    Name = userViewModel.Name,
-                    Email = userViewModel.Email,
-                    Password = !String.IsNullOrEmpty(userViewModel.Password) ? EncryptPassword(userViewModel.Password) : _user.Password,
-                    Role = userViewModel.Role,
-                    DateCreated = _user.DateCreated,
-                    DateUpdated = TimeZoneManager.GetTimeNow(),
-                    IsActive = _user.IsActive,
-                    UserCreated = _user.UserCreated,
-                    UserUpdated = "Sistema" // ou pegar do contexto do usuário logado
-                };
-
-                await UserRepo.UpdateAsync(userToUpdate);
-            }
-            
-            return true;
-        }
-
-        public async Task<Boolean> ExcluirAsync(String id)
+        public async Task<RequestViewModel<UserViewModel>> GetByIdAsync(String id)
         {
             if (!Guid.TryParse(id, out Guid userId))
             {
                 throw new ValidationException("ID inválido!");
             }
-            
+
+            User? _user = await db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.GuidID == userId && x.IsActive);
+            if (_user == null)
+            {
+                throw new ValidationException("Usuário não encontrado!");
+            }
+
+
+
+            return new RequestViewModel<UserViewModel>
+            {
+                Data = new List<UserViewModel> { new UserViewModel(_user) },
+                Type = nameof(UserViewModel),
+                Status = "Success",
+                Message = "Usuário encontrado com sucesso"
+            };
+        }
+
+        public async Task<RequestViewModel<UserViewModel>> CreateAsync(UserViewModel userViewModel)
+        {
+
+            Validator.ValidateObject(userViewModel, new ValidationContext(userViewModel), true);
+
+            IRepository<User> UserRepo = new Repository<User>(db);
+
+            // Verificar se email já existe
+            User? existingUser = await UserRepo.GetAsync(x => x.Email.ToUpper() == userViewModel.Email.ToUpper());
+            if (existingUser != null)
+            {
+                throw new ValidationException("Email já cadastrado");
+            }
+
+            User newUser = userViewModel.ToEntity();
+
+            newUser.Password = EncryptPassword(newUser.Password);
+            newUser.IsActive = true;
+            newUser.DateCreated = TimeZoneManager.GetTimeNow();
+            newUser.UserCreated = "Sistema";
+
+            await UserRepo.CreateAsync(newUser);
+
+            return new RequestViewModel<UserViewModel>
+            {
+                Data = new List<UserViewModel> { new UserViewModel(newUser) },
+                Type = nameof(UserViewModel),
+                Status = "Success",
+                Message = "Usuário criado com sucesso"
+            };
+
+
+        }
+
+        public async Task<RequestViewModel<UserViewModel>> UpdateAsync(UserViewModel userViewModel)
+        {
+
+            Validator.ValidateObject(userViewModel, new ValidationContext(userViewModel), true);
+
+            IRepository<User> UserRepo = new Repository<User>(db);
+            User? _user = await UserRepo.GetAsync(x => x.GuidID == userViewModel.GuidID);
+
+            if (_user == null)
+            {
+                throw new ValidationException("Usuário não encontrado");
+            }
+
+            // Verificar se email já existe em outro usuário
+            User? existingUser = await UserRepo.GetAsync(x => x.Email.ToUpper() == userViewModel.Email.ToUpper() && x.GuidID != userViewModel.GuidID);
+            if (existingUser != null)
+            {
+                throw new ValidationException("Email já cadastrado por outro usuário");
+            }
+
+            User userToUpdate = new User
+            {
+                ID = _user.ID,
+                GuidID = _user.GuidID,
+                Name = userViewModel.Name,
+                Email = userViewModel.Email,
+                Password = !String.IsNullOrEmpty(userViewModel.Password) ? EncryptPassword(userViewModel.Password) : _user.Password,
+                Role = userViewModel.Role,
+                DateCreated = _user.DateCreated,
+                DateUpdated = DateTime.UtcNow,
+                IsActive = _user.IsActive,
+                UserCreated = _user.UserCreated,
+                UserUpdated = "Sistema" // ou pegar do contexto do usuário logado
+            };
+
+            await UserRepo.UpdateAsync(userToUpdate);
+
+            return new RequestViewModel<UserViewModel>
+            {
+                Data = new List<UserViewModel> { userViewModel },
+                Type = nameof(UserViewModel),
+                Status = "Success",
+                Message = "Usuário atualizado com sucesso"
+            };
+
+        }
+
+        public async Task<RequestViewModel<UserViewModel>> DeleteAsync(String id)
+        {
+
+            if (!Guid.TryParse(id, out Guid userId))
+            {
+                throw new ValidationException("ID inválido!");
+            }
+
             IRepository<User> UserRepo = new Repository<User>(db);
 
             User? _user = await UserRepo.GetAsync(x => x.GuidID == userId);
             if (_user == null)
             {
-                throw new KeyNotFoundException("Usuário não encontrado");
+                throw new ValidationException("Usuário não encontrado");
             }
-            
-            return await UserRepo.DeleteAsync(_user);
+
+            _user.IsActive = false;
+            _user.DateUpdated = DateTime.UtcNow;
+            _user.UserUpdated = "Sistema";
+            await UserRepo.UpdateAsync(_user);
+
+            return new RequestViewModel<UserViewModel>
+            {
+                Data = new List<UserViewModel>(),
+                Type = nameof(UserViewModel),
+                Status = "Success",
+                Message = "Usuário excluído com sucesso"
+            };
+
         }
 
-        public UserAuthenticateResponseViewModel Authenticate(UserAuthenticateRequestViewModel user)
+        public RequestViewModel<UserViewModel> Authenticate(UserAuthenticateRequestViewModel user)
         {
             if (String.IsNullOrEmpty(user.Email) || String.IsNullOrEmpty(user.Password))
             {
@@ -175,16 +215,22 @@ namespace Portfolium_Back.Services
 
             user.Password = EncryptPassword(user.Password);
 
-                User? _user = db.Users.FirstOrDefault(x => x.IsActive && x.Email.ToUpper() == user.Email.ToUpper()
-                                                  && x.Password.ToUpper() == user.Password.ToUpper());
+            User? _user = db.Users.FirstOrDefault(x => x.IsActive && x.Email.ToUpper() == user.Email.ToUpper()
+                                              && x.Password.ToUpper() == user.Password.ToUpper());
             if (_user == null)
             {
                 throw new UnauthorizedAccessException("Usuário não encontrado ou senha incorreta");
             }
-            
+
             UserViewModel userViewModel = new UserViewModel(_user);
-            
-            return new UserAuthenticateResponseViewModel(userViewModel, TokenHelper.GenerateToken(_user));
+            userViewModel.Token = TokenHelper.GenerateToken(_user);
+            return new RequestViewModel<UserViewModel>
+            {
+                Data = new List<UserViewModel> { userViewModel },
+                Type = nameof(UserViewModel),
+                Status = "Success",
+                Message = "Usuário autenticado com sucesso"
+            };
         }
 
         private String EncryptPassword(String password)

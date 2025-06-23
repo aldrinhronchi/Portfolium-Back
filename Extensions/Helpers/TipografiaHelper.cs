@@ -18,8 +18,8 @@ namespace Portfolium_Back.Extensions.Helpers
         /// <param name="Dados">Dados em si da requisição para serem páginadas.</param>
         /// <param name="Pagina">A Página Atual.</param>
         /// <param name="TamanhoPagina">Quantidade de Registros exibidos por Página. Se for "0", deve se trazer todos os Dados.</param>
-        /// <returns>A RequisicaoViewModel com os Dados esperados pelo Front-End</returns>
-        public static RequisicaoViewModel<T> FormatarRequisicao<T>(IQueryable<T> Dados, Int32 Pagina, Int32 TamanhoPagina)
+        /// <returns>A RequestViewModel com os Dados esperados pelo Front-End</returns>
+        public static RequestViewModel<T> FormatarRequisicao<T>(IQueryable<T> Dados, Int32 Pagina, Int32 TamanhoPagina)
         {
             Decimal Total = Dados.Count();
             List<T> Items;
@@ -34,7 +34,7 @@ namespace Portfolium_Back.Extensions.Helpers
                 TotalPaginas = Math.Ceiling(Total / TamanhoPagina);
             }
 
-            return new RequisicaoViewModel<T>()
+            return new RequestViewModel<T>()
             {
                 Data = Items,
                 Page = Pagina,
@@ -51,8 +51,8 @@ namespace Portfolium_Back.Extensions.Helpers
         /// <param name="Dados">Dados em si da requisição para serem páginadas.</param>
         /// <param name="Pagina">A Página Atual.</param>
         /// <param name="TamanhoPagina">Quantidade de Registros exibidos por Página. Se for "0", deve se trazer todos os Dados.</param>
-        /// <returns>A RequisicaoViewModel com os Dados esperados pelo Front-End</returns>
-        public static async Task<RequisicaoViewModel<T>> FormatarRequisicaoAsync<T>(IQueryable<T> Dados, Int32 Pagina, Int32 TamanhoPagina)
+        /// <returns>A RequestViewModel com os Dados esperados pelo Front-End</returns>
+        public static async Task<RequestViewModel<T>> FormatarRequisicaoAsync<T>(IQueryable<T> Dados, Int32 Pagina, Int32 TamanhoPagina)
         {
             Decimal Total = await Dados.CountAsync();
             List<T> Items;
@@ -67,7 +67,7 @@ namespace Portfolium_Back.Extensions.Helpers
                 TotalPaginas = Math.Ceiling(Total / TamanhoPagina);
             }
 
-            return new RequisicaoViewModel<T>()
+            return new RequestViewModel<T>()
             {
                 Data = Items,
                 Page = Pagina,
@@ -76,7 +76,38 @@ namespace Portfolium_Back.Extensions.Helpers
                 Type = typeof(T).Name,
             };
         }
+ /// <summary>
+        /// Função para formatar as requisições de forma assíncrona para o padrão esperado pelo Front-End
+        /// </summary>
+        /// <typeparam name="T">Classe a ser enviada</typeparam>
+        /// <param name="Dados">Dados em si da requisição para serem páginadas.</param>
+        /// <param name="Pagina">A Página Atual.</param>
+        /// <param name="TamanhoPagina">Quantidade de Registros exibidos por Página. Se for "0", deve se trazer todos os Dados.</param>
+        /// <returns>A RequestViewModel com os Dados esperados pelo Front-End</returns>
+        public static async Task<RequestViewModel<IViewModel>> FormatarRequisicaoParaViewModelAsync<T, IViewModel>(IQueryable<T> Dados, Int32 Pagina, Int32 TamanhoPagina, IViewModel<T,IViewModel> ViewModel)
+        {
+            Decimal Total = await Dados.CountAsync();
+            List<T> Items;
+            Decimal TotalPaginas = 0;
+            if (TamanhoPagina == 0)
+            {
+                Items = await Dados.ToListAsync();
+            }
+            else
+            {
+                Items = await Dados.Skip((Pagina - 1) * TamanhoPagina).Take(TamanhoPagina).ToListAsync();
+                TotalPaginas = Math.Ceiling(Total / TamanhoPagina);
+            }
 
+            return new RequestViewModel<IViewModel>()
+            {
+                Data = Items.Select(item => ViewModel.ToViewModel(item)).ToList(),
+                Page = Pagina,
+                PageSize = TamanhoPagina,
+                PageCount = (Int32)TotalPaginas,
+                Type = typeof(T).Name,
+            };
+        }
         /// <summary>
         /// Função para filtrar uma coleção de dados com base em um campo e um valor específico.
         /// </summary>

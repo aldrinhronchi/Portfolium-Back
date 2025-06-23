@@ -11,6 +11,11 @@
         public Int32 ID { get; set; }
 
         /// <summary>
+        /// Identificador Único Global (GUID)
+        /// </summary>
+        public Guid GuidID { get; set; } = Guid.NewGuid();
+
+        /// <summary>
         /// Registro Ativo ou Inativo
         /// </summary>
         public Boolean IsActive { get; set; } = true;
