@@ -233,7 +233,12 @@ namespace Portfolium_Back.Services
                 throw new ArgumentNullException(nameof(skill));
             }
 
+            var user = await _userRepository.GetAsync(x => x.GuidID == userId);
 
+            if (user == null)
+            {
+                throw new ValidationException("Usuário não encontrado");
+            }
 
             if (skill.GuidID.HasValue && skill.GuidID != Guid.Empty)
             {
@@ -242,6 +247,7 @@ namespace Portfolium_Back.Services
 
             var entity = skill.ToEntity();
             entity.UserID = userId;
+            entity.UserCreated = $"{user.ID} - {user.Name}";
 
             var result = await _curriculumRepository.CreateSkillAsync(entity);
             var viewModel = new SkillViewModel(result);
@@ -360,7 +366,12 @@ namespace Portfolium_Back.Services
                 throw new ArgumentNullException(nameof(experience));
             }
 
+            var user = await _userRepository.GetAsync(x => x.GuidID == userId);
 
+            if (user == null)
+            {
+                throw new ValidationException("Usuário não encontrado");
+            }
 
             if (experience.GuidID.HasValue && experience.GuidID != Guid.Empty)
             {
@@ -369,6 +380,7 @@ namespace Portfolium_Back.Services
 
             var entity = experience.ToEntity();
             entity.UserID = userId;
+            entity.UserCreated = $"{user.ID} - {user.Name}";
 
             var result = await _curriculumRepository.CreateExperienceAsync(entity);
             var viewModel = new ExperienceViewModel(result);
@@ -490,7 +502,12 @@ namespace Portfolium_Back.Services
                 throw new ArgumentNullException(nameof(education));
             }
 
+            var user = await _userRepository.GetAsync(x => x.GuidID == userId);
 
+            if (user == null)
+            {
+                throw new ValidationException("Usuário não encontrado");
+            }
 
             if (education.GuidID.HasValue && education.GuidID != Guid.Empty)
             {
@@ -499,6 +516,7 @@ namespace Portfolium_Back.Services
 
             var entity = education.ToEntity();
             entity.UserID = userId;
+            entity.UserCreated = $"{user.ID} - {user.Name}";
 
             var result = await _curriculumRepository.CreateEducationAsync(entity);
             var viewModel = new EducationViewModel(result);
@@ -618,7 +636,12 @@ namespace Portfolium_Back.Services
                 throw new ArgumentNullException(nameof(certification));
             }
 
+            var user = await _userRepository.GetAsync(x => x.GuidID == userId);
 
+            if (user == null)
+            {
+                throw new ValidationException("Usuário não encontrado");
+            }
 
             if (certification.GuidID.HasValue && certification.GuidID != Guid.Empty)
             {
@@ -627,6 +650,7 @@ namespace Portfolium_Back.Services
 
             var entity = certification.ToEntity();
             entity.UserID = userId;
+            entity.UserCreated = $"{user.ID} - {user.Name}";
 
             var result = await _curriculumRepository.CreateCertificationAsync(entity);
             var viewModel = new CertificationViewModel(result);
@@ -744,7 +768,12 @@ namespace Portfolium_Back.Services
                 throw new ArgumentNullException(nameof(service));
             }
 
+            var user = await _userRepository.GetAsync(x => x.GuidID == userId);
 
+            if (user == null)
+            {
+                throw new ValidationException("Usuário não encontrado");
+            }
 
             if (service.GuidID.HasValue && service.GuidID != Guid.Empty)
             {
@@ -753,6 +782,7 @@ namespace Portfolium_Back.Services
 
             var entity = service.ToEntity();
             entity.UserID = userId;
+            entity.UserCreated = $"{user.ID} - {user.Name}";
 
             var result = await _curriculumRepository.CreateServiceAsync(entity);
             var viewModel = new ServiceViewModel(result);
